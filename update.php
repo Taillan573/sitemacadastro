@@ -27,12 +27,14 @@ $pdo=conectar();
         $senha = strip_tags(trim($_POST['senha']));
 
         try {
-            $q_insert = $pdo->prepare('INSERT INTO PESSOA (NOME,IDADE,EMAIL,SENHA) VALUES (:nome,:idade,:email,:senha)');
+            $q_insert = $pdo->prepare('UPDATE PESSOA SET nome=:nome,idade=:idade,senha=:senha where email=:email');
             $q_insert->bindValue(':nome', $nome);
             $q_insert->bindValue(':idade', $idade);
             $q_insert->bindValue(':email', $email);
             $q_insert->bindValue(':senha', $senha);
             $q_insert->execute();
+            echo $q_insert->rowCount();
+
 
             echo "<script>alert('Cliente sucesso')</script>";
        } catch (PDOException $ex) {

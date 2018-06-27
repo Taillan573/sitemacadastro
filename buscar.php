@@ -1,6 +1,6 @@
 <?php
 include("conexao.php");
-$pdo=conectar();
+$pdo = conectar();
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -17,43 +17,14 @@ $pdo=conectar();
                 display: block;
             }
 
+            table{
+                margin-top: 10px;
+            }
+
         </style>
+
+
     </head>
-        <?php
-        if(isset($_POST['enviar'])){
-            $id = strip_tags(trim($_POST['id']));
-            ?>
-            <table width="100%" border="0">
-                <tr>
-                    <th>Nome</th>
-                    <th>Status</th>
-                    <th>Ação</th>
-                </tr>
-                <?php
-                $buscarusuarios=$pdo->prepare("SELECT * FROM pessoa WHERE id=:id");
-                $buscarusuarios->bindValue(":id",$id);
-                $buscarusuarios->execute();
-                $result=$buscarusuarios->fetchAll(PDO::FETCH_ASSOC);
-                var_dump($result);
-                /*if(mysql_num_rows($buscarusuarios) == 0){
-                echo"Nenhum usuário cadastrado no sistema!";
-                }else{
-                    while($linha=mysql_fetch_array($buscarusuarios)){
-                ?>
-                <tr>
-                    <td><?php echo $linha["nome"];?></td>
-                    <td><?php echo $linha["status"];?></td>
-                    <td><?php $id=$linha["id"]; 
-                   /* if($linha["status"] == 0){ 
-                        echo "<a href=\"index.php?acao=aprovar&amp;id=$id\">Aprovar</a>";
-                    }else{
-                        echo"<a href=\"index.php?acao=bloquear&amp;id=$id\">Bloquear</a>";
-                    }*/
-                    ?>
-                    </td>
-                </tr>
-                <?php  }?>
-            </table>
     <body>
 
 
@@ -61,8 +32,75 @@ $pdo=conectar();
             <form enctype="multipart/form-data" name="inserir" method="post" >
                 <label for="inputEmail" >Email: </label>
                 <input type="text" name="id" placeholder="id">
-                <button type="submit" name="enviar" >Apagar</button>
+                <button type="submit" name="enviar" >Buscar</button>
             </form>
         </div>
     </body>
+    <?php
+    if (isset($_POST['enviar'])) {
+        $id = strip_tags(trim($_POST['id']));
+        if (empty($id)) {
+            # code...
+            ?>
+
+            <table align="center" border="3">
+                <tr>
+                        <th>Nome</th>
+                        <th>Idade</th>
+                        <th>Email</th>
+                        <th>Ação</th>
+                </tr>
+                <?php
+                $buscarusuarios = $pdo->prepare("SELECT * FROM pessoa ");
+                $buscarusuarios->bindValue(":id", $id);
+                $buscarusuarios->execute();
+                $result = $buscarusuarios->fetchAll(PDO::FETCH_ASSOC);
+
+                if ($buscarusuarios->rowCount() == 0) {
+                    echo"Nenhum usuário cadastrado no sistema!";
+                } else {
+                    foreach ($result as &$value) {
+                        ?>
+                        <tr>
+                            <td><?php echo $value["nome"]; ?></td>
+                            <td><?php echo $value["idade"]; ?></td>
+                            <td><?php echo $value["email"]; ?></td>
+                        </tr>
+                    <?php
+                    }
+                }
+            } else {
+                ?>
+
+                <table align="center" border="3">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Idade</th>
+                        <th>Email</th>
+                        <th>Ação</th>
+                    </tr>
+                    <?php
+                    $buscarusuarios = $pdo->prepare("SELECT * FROM pessoa where id=:id");
+                    $buscarusuarios->bindValue(":id", $id);
+                    $buscarusuarios->execute();
+                    $result = $buscarusuarios->fetchAll(PDO::FETCH_ASSOC);
+
+                    if ($buscarusuarios->rowCount() == 0) {
+                        echo"Nenhum usuário cadastrado no sistema!";
+                    } else {
+                        foreach ($result as &$value) {
+                            ?>
+                            <tr>
+                                <td><?php echo $value["nome"]; ?></td>
+                                <td><?php echo $value["idade"]; ?></td>
+                                <td><?php echo $value["email"]; ?></td>
+                            </tr>
+                        <?php
+                        }
+                    }
+                }
+            }
+            ?>
+        </table>
+
 </html>
